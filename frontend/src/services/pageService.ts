@@ -1,7 +1,7 @@
 import groq from "groq";
 import studioClient from "../utils/sanity";
 
-interface Page {
+export interface Page {
   _id: string;
   _type: "page";
   key: string;
@@ -20,10 +20,21 @@ const allPageQuery = groq`
  }
 `;
 
+const pageQuery = groq`
+  *[_type == "page" && slug.current == $slug][0] {
+    ...,
+  }
+`;
+
 const pageService = {
   async getAllPages(): Promise<Page[]> {
     return studioClient.fetch(allPageQuery);
   },
+  async getPage(slug: string): Promise<Page> {
+    return studioClient.fetch(pageQuery, {
+      slug
+    })
+  }
 };
 
 export default pageService;
